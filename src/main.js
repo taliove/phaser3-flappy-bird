@@ -1,33 +1,20 @@
 import 'phaser';
 
-import preload from './scene/preload'
+import scenes from './scene'
 
 var config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
     width: 288,
     height: 505,
-    scene: [preload]
+    scene: scenes,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: {y: 200}
+        }
+    }
 };
 
-var game = new Phaser.Game(config);
-
-// function preload ()
-// {
-//     this.load.image('logo', 'assets/logo.png');
-// }
-//
-// function create ()
-// {
-//     var logo = this.add.image(400, 150, 'logo');
-//
-//     this.tweens.add({
-//         targets: logo,
-//         y: 450,
-//         duration: 2000,
-//         ease: 'Power2',
-//         yoyo: true,
-//         loop: -1
-//     });
-//
-// }
+const game = new Phaser.Game(config);
+game.scene.start('boot');

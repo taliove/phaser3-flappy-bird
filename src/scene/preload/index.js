@@ -2,8 +2,9 @@
  * 加载页面
  */
 export default {
+    key: "preload",
     preload() {
-        this.load.image("loading", "static/assets/preloader.gif");
+        let preloadSpring = this.add.sprite(50, this.height / 2, 'loading');
         this.load.image("background", "static/assets/background.png");
         this.load.image("ground", "static/assets/ground.png");
         this.load.image("title", "static/assets/title.png");
@@ -27,41 +28,10 @@ export default {
         this.load.image('score_board', 'static/assets/scoreboard.png'); //得分板
     },
     create() {
-        this.bg = this.add.tileSprite(144, 505 / 2, 288, 505, 'background');
-        this.ground = this.add.tileSprite(335 / 2, 505 - 112 / 2, 505, 112, 'ground');
-
-        var titleGroup = this.add.group([{
-            key: "title",
-            setXY: {
-                x: 335/2,
-                y: 100,
-                stepX: 40
-            }
-        }, {
-            key: "bird",
-            setXY: {
-                x: 100,
-                y: 100
-            }
-        }]);
-        // titleGroup.create(179 / 2, 48 / 2, 'title');
-        // var bird = titleGroup.create(190, 10, 'bird');
-        // bird.animations.add("fly");
-        // bird.animations.add("fly", 12, true);
-
-        this.add.tween({
-            targets: titleGroup,
-            y: 120,
-            ease: null,
-            delay: 0,
-            autoStart: true,
-            duration: 1000,
-            yoyo: true,
-            repeat: -1
-        });
+        console.log('preload', "created");
+        this.scene.start('menu');
     },
     update() {
-        this.bg.tilePositionX -= 0.1;
-        this.ground.tilePositionX -= 1;
+
     }
 }
