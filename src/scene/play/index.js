@@ -15,8 +15,7 @@ export default {
         // this.ground = this.platforms.create(0, height - 112, 'ground').setOrigin(0).refreshBody();
 
         this.ground = this.add.tileSprite(0, height - 112, width, 112, 'ground').setOrigin(0); //地板，这里先不用移动，游戏开始后再动
-        this.physics.add.existing(this.ground);
-        this.ground.body.setAllowGravity(false);
+        this.physics.add.existing(this.ground, true);
 
         this.bird = this.physics.add.sprite(50, 150, 'bird');
         this.bird.setBounce(0.2);
@@ -44,7 +43,7 @@ export default {
             this.playTip.destroy();
         };
         this.fly = () => {
-            this.bird.body.velocity.y = -350;
+            this.bird.body.setVelocityY(-350);
             this.add.tween({
                 targets: [this.bird],
                 angle: -30,
