@@ -26,6 +26,9 @@ export default {
         this.load.image('play_tip', 'static/assets/instructions.png'); //玩法提示图片
         this.load.image('game_over', 'static/assets/gameover.png'); //gameover图片
         this.load.image('score_board', 'static/assets/scoreboard.png'); //得分板
+        this.load.spritesheet('medals', 'static/assets/medals.png', {
+            frameWidth: 44, frameHeight: 46
+        }); //得分板
     },
     create() {
         console.log('preload', "created");
