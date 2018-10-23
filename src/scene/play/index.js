@@ -16,8 +16,8 @@ export default {
         this.labelScore.setVisible(false);
         this.labelScoreGroup = this.add.group();
         this.labelScoreBoard = this.labelScoreGroup.create(width / 2, 200, "score_board").setDepth(1);
+        this.labelScoreMedal = this.labelScoreGroup.create(width / 2 - 65, 209, "medals", 0).setDepth(1);
         this.labelScoreGroup.toggleVisible();
-
 
         //  结束
         this.gameOver = this.add.sprite(width / 2, 0, "game_over").setVisible(false).setDepth(2);
@@ -40,7 +40,7 @@ export default {
         // this.bird.body.setAngularVelocity(100);
         //鸟的重力,未开始游戏，先让重力为0，不然鸟会掉下来
         this.bird.body.setAllowGravity(false);
-        this.physics.add.collider(this.bird, this.ground);
+        // this.physics.add.collider(this.bird, this.ground);
         //
         //get ready 文字
         this.readyText = this.add.image(width / 2, 40, 'ready_text').setOrigin(0.5, 0);
@@ -92,10 +92,14 @@ export default {
                 y: 180,
                 duration: 600
             });
-            if (this.score >= 50) {
-                this.labelScoreGroup.create(width / 2 - 65, 209, "medals", this.score >= 50 ? 0 : this.score >= 100 ? 1 : -1).setDepth(1);
-            }
             this.labelScoreGroup.toggleVisible();
+            if (this.score >= 100) {
+                this.labelScoreMedal.setFrame(1);
+            } else if (this.score >= 50) {
+                this.labelScoreMedal.setFrame(0);
+            } else {
+                this.labelScoreMedal.setVisible(false);
+            }
             this.gameOver.setVisible(true);
             this.add.tween({
                 targets: [this.gameOver],
@@ -110,10 +114,13 @@ export default {
                 duration: 600,
             });
 
-            let btn = this.add.sprite(width / 2, height / 2 + 50, 'btn').setInteractive().setDepth(1);
+            let btn = this.add.sprite(width / 2, height / 2 + 50, 'btn').setInteractive().setDepth(1).setVisible(false);
             btn.on('pointerdown', () => {
                 this.scene.start('play');
-            })
+            });
+            setTimeout(function () {
+                btn.setVisible(true);
+            }, 3000)
         };
         this.fly = () => {
             if (this.hasStarted && !this.gameIsOver) {
@@ -138,7 +145,7 @@ export default {
             // pipe.outOfBoundsKill = true;
         };
         //上下管道之间的间隙宽度
-        let gap = 120;
+        let gap = 220;
         let max = height - gap - 87;
         this.addRowOfPipes = () => {
             let position = Phaser.Math.Between(25, max);
