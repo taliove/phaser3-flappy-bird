@@ -47,3 +47,21 @@ this.startBtn.on('pointerdown', startGame); // Start game on click.
 * 例子：https://www.cnblogs.com/2050/p/3790279.html
 * [API文档](https://photonstorm.github.io/phaser3-docs/index.html)
 * [Phaser 3 Scene / Phaser 2 State - passing data to init when start](http://www.html5gamedevs.com/topic/36148-phaser-3-scene-phaser-2-state-passing-data-to-init-when-start/)
+
+# 音频
+
+### 音频载入
+
+```javascript
+this.load.audio("xx", ['xx.ogg','xx.mp3']);
+```
+
+### 音频转换
+
+## OGG转MP3
+
+https://stackoverflow.com/questions/3255674/convert-audio-files-to-mp3-using-ffmpeg
+
+```
+ffmpeg -i input.wav -vn -ar 44100 -ac 2 -ab 192k -f mp3 output.mp3
+```

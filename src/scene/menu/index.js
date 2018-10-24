@@ -8,7 +8,7 @@ export default {
         this.bg = this.add.tileSprite(0, 0, width, height, 'assets', 'bg-day.png').setOrigin(0);
         this.ground = this.add.tileSprite(0, groundY, width, 112, 'assets', 'ground.png').setOrigin(0);
 
-        let bird = this.add.sprite(width / 2, 255, 'bird');
+        let bird = this.add.sprite(width / 2, 230, 'bird');
         let framesBird = this.anims.generateFrameNames('assets', {
             start: 1,
             end: 3,
@@ -23,7 +23,7 @@ export default {
         });
         bird.anims.play('fly', true);
 
-        let title = this.add.image(width / 2, 200, 'assets', 'flappy.png');
+        let title = this.add.image(width / 2, 170, 'assets', 'flappy.png');
 
         let titleGroup = this.add.group();
         titleGroup.add(bird);
@@ -31,14 +31,14 @@ export default {
 
         this.add.tween({
             targets: [bird],
-            y: bird.y + 5,
+            y: "+=5",
             ease: null,
             delay: 0,
             duration: 400,
             yoyo: true,
             repeat: -1
         });
-        let btn = this.add.sprite(width / 2, height - 130, 'assets', 'start.png').setInteractive();
+        let btn = this.add.sprite(width / 2, height - 150, 'assets', 'start.png').setInteractive();
         btn.on('pointerdown', () => {
             this.scene.start('play');
         })

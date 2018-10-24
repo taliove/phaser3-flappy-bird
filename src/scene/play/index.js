@@ -11,7 +11,7 @@ export default {
         //  游戏速度或管道速度
         this.gameSpeed = -120;
         //  管道生成间隔时间
-        this.pipeDelay = 1400;
+        this.pipeDelay = 2500;
         //  每次飞行高度
         this.flyHeight = -350;
         //  小鸟重力速度
@@ -45,14 +45,14 @@ export default {
         //  声音
         this.soundFly = this.sound.add("fly_sound");
         this.soundScore = this.sound.add("score_sound");
-        this.soundHitGround = this.sound.add("hit_ground_sound");
+        this.soundHitGround = this.sound.add("hit_pipe_sound");
         this.soundHitPipe = this.sound.add("hit_pipe_sound");
 
         //  我们的主角，鸟儿
         this.bird = this.physics.add.sprite(90, 260, 'bird').setOrigin(0.5).setDepth(998);
         this.birdTween = this.add.tween({
             targets: [this.bird],
-            y: this.bird.y + 5,
+            y: "+=5",
             delay: 0,
             duration: 400,
             yoyo: true,
@@ -60,9 +60,8 @@ export default {
         });
         //提示点击屏幕的图片
         this.playTip = this.add.image(width / 2, 230, 'assets', 'tips.png').setOrigin(0.5, 0);
-        // this.bird.setBounce(0.2);
-        // this.bird.setCollideWorldBounds(true);
-        this.bird.debugBodyColor = "#000";
+        this.bird.setBounce(0.1);
+        this.bird.setCollideWorldBounds(true);
         this.bird.anims.play('fly', true);
         this.bird.body.setGravityY(this.birdGravity);
         this.bird.body.setAllowGravity(false);
@@ -85,20 +84,6 @@ export default {
                 this.playTip.destroy();
                 this.timer.paused = false;
                 this.labelScore.setVisible(true);
-                this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, () => {
-                    if (this.hasHitPipe) return;
-                    this.hasHitPipe = true;
-                    this.stopGame();
-                    this.soundHitPipe.play();
-                }, null, this);
-                this.physicBirdGround = this.physics.add.collider(this.bird, this.ground, () => {
-                    if (this.hasHitGround) {
-                        return;
-                    }
-                    this.soundHitGround.play();
-                    this.hasHitGround = true;
-                    this.stopGame();
-                }, null, this);
             } else {
                 this.fly();
             }
@@ -108,8 +93,8 @@ export default {
             this.time.removeAllEvents();
             this.hasStarted = false;
             this.timer.paused = true;
-            this.bg.setActive(false);
-            this.ground.setActive(false);
+            // this.bg.setActive(false);
+            // this.ground.setActive(false);
 
             this.labelScoreGroup.toggleVisible();
             //  计分牌
@@ -130,20 +115,26 @@ export default {
 
             //  控制鸟在死亡后的掉落
             this.bird.setActive(false);
-            let targetBirdY = this.ground.y - this.bird.height + 18;
-            let duration = 600;
-            if (this.bird.y + 10 >= targetBirdY) {
-                targetBirdY = this.bird.y - this.bird.height + 5;
-                duration = 50;
-            } else {
-                this.add.tween({
-                    targets: [this.bird],
-                    y: targetBirdY,
-                    // angle: 45,
-                    duration: duration,
-                });
-            }
-            this.physics.pause();
+            // let targetBirdY = this.ground.y - this.bird.height + 18;
+            // let duration = 600;
+            // if (this.bird.y + 10 >= targetBirdY) {
+            //     targetBirdY = this.bird.y - this.bird.height + 5;
+            //     duration = 50;
+            // } else {
+            //     this.add.tween({
+            //         targets: [this.bird],
+            //         y: targetBirdY,
+            //         // angle: 45,
+            //         duration: duration,
+            //     });
+            // }
+
+            //  管道停止运动
+            // this.pipes.active = false;
+            this.pipes.getChildren().forEach(pipe => {
+                pipe.body.setAllowGravity(false);
+                pipe.setActive(false).setVelocity(0);
+            });
         };
         let params = {};
         this.flyTween = this.add.tween({
@@ -165,16 +156,46 @@ export default {
                 // if (this.flyTween.isPlaying) {
                 //     this.flyTween.play(60);
                 // } else {
-                    this.flyTween.restart();
+                this.flyTween.restart();
                 // }
                 this.soundFly.play();
             }
         };
         this.pipes = this.add.group();
-        this.addOnePipe = (x, y, pipeName) => {
-            let pipe = this.physics.add.sprite(x, y, 'assets', pipeName).setActive(true).setVelocity(this.gameSpeed, 0).setGravity(0);
-            pipe.body.setAllowGravity(false);
-            this.pipes.add(pipe);
+        let pipeIndex = 0;
+        /**
+         * 添加一组管道
+         * @param x 横坐标
+         * @param y1 上部管道Y坐标
+         * @param y2 下部管道Y坐标
+         */
+        this.addOnePipe = (x, y1, y2) => {
+            let children = this.pipes.getChildren();
+            if (children.length >= 6) {
+                let pipe1 = children[0];
+                let pipe2 = children[1];
+                console.log("pips --- ", pipe1.pipeIndex, pipe2.pipeIndex);
+                this.pipes.remove(pipe1);
+                this.pipes.remove(pipe2);
+                pipe1.hasScored = false;
+                pipe2.hasScored = false;
+                pipe1.setPosition(x, y1);
+                pipe2.setPosition(x, y2);
+                this.pipes.add(pipe1);
+                this.pipes.add(pipe2);
+            } else {
+                let pipe1 = this.physics.add.sprite(x, y1, 'assets', 'pipe-green-top.png').setActive(true).setVelocity(this.gameSpeed, 0).setGravity(0);
+                let pipe2 = this.physics.add.sprite(x, y2, 'assets', 'pipe-green-bottom.png').setActive(true).setVelocity(this.gameSpeed, 0).setGravity(0);
+
+                pipe1.body.setAllowGravity(false);
+                pipe2.body.setAllowGravity(false);
+                pipe1.pipeIndex = pipeIndex;
+                pipe2.pipeIndex = pipeIndex;
+
+                this.pipes.add(pipe1);
+                this.pipes.add(pipe2);
+            }
+            pipeIndex++;
             // Automatically kill the pipe when it's no longer visible
             // pipe.checkWorldBounds = true;
             // pipe.outOfBoundsKill = true;
@@ -184,8 +205,7 @@ export default {
             let position = Phaser.Math.Between(25, max);
             let topPipeY = position - 160; //上方管道的位置
             let bottomPipeY = position + gap + 160 - 20; //下方管道的位置
-            this.addOnePipe(width, topPipeY, "pipe-green-top.png");
-            this.addOnePipe(width, bottomPipeY, "pipe-green-bottom.png");
+            this.addOnePipe(width, topPipeY, bottomPipeY);
         };
         this.input.on("pointerdown", this.startGame, this);
         //利用时钟事件来循环产生管道
@@ -195,12 +215,24 @@ export default {
             callback: this.addRowOfPipes,
             paused: true
         });
-    },
-    stopObject() {
-        this.bg.setActive(false);
-        this.ground.setActive(false);
-        this.pipes.stop();
-        this.bird.setActive(false);
+        this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, () => {
+            if (this.hasHitPipe || this.hasHitGround) return;
+            this.hasHitPipe = true;
+            console.log("hit pipe");
+            this.physicBirdPipe.destroy();
+            this.stopGame();
+            this.soundHitPipe.play();
+        }, null, this);
+        this.physicBirdGround = this.physics.add.collider(this.bird, this.ground, () => {
+            if (this.hasHitGround || this.hasHitPipe) {
+                return;
+            }
+            console.log("hit ground");
+            // this.physics.world.removeCollider(this.physicBirdGround);
+            this.soundHitGround.play();
+            this.hasHitGround = true;
+            this.stopGame();
+        }, null, this);
     },
     update() {
         if (!this.gameIsOver) {
@@ -213,7 +245,6 @@ export default {
             //分数检测和更新
             this.pipes.getChildren().forEach(function (pipe, index) {
                 if (index % 2 === 0) return false;
-                // console.log(index, pipe.visible);
                 if (!pipe.hasScored && pipe.x <= this.bird.x + this.bird.width) {
                     pipe.hasScored = true; //标识为已经得过分
                     this.labelScore.setText(++this.score); //更新分数的显示
