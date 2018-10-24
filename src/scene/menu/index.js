@@ -1,7 +1,6 @@
 export default {
     key: "menu",
     create() {
-        console.log("menu", "created");
         let {width, height} = this.sys.game.canvas;
         let groundY = height * 0.8;
 

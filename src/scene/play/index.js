@@ -11,7 +11,7 @@ export default {
         //  游戏速度或管道速度
         this.gameSpeed = -120;
         //  管道生成间隔时间
-        this.pipeDelay = 2500;
+        this.pipeDelay = 1400;
         //  每次飞行高度
         this.flyHeight = -350;
         //  小鸟重力速度
