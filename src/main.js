@@ -8,6 +8,7 @@ window.onload = function () {
         parent: 'phaser-app',
         width: 288,
         height: 505,
+        zoom: 2,
         autoResize: true,
         scene: scenes,
         physics: {
@@ -21,8 +22,23 @@ window.onload = function () {
     const game = new Phaser.Game(config);
     game.scene.start('boot');
 
+    function resize() {
+        // game.resize(window.innerWidth, window.innerHeight);
+        var canvas = document.querySelector("canvas");
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        var gameRatio = config.width / config.height;
 
-    window.addEventListener('resize', function (event) {
-        game.resize(window.innerWidth, window.innerHeight);
-    }, false);
+        //  以高度优先
+        // canvas.style.width = (windowHeight * gameRatio) + "px";
+        // canvas.style.height = "100%";
+
+        //  以宽度优先
+        canvas.style.width = "100%";
+        canvas.style.height = windowWidth / gameRatio + "px";
+    }
+
+    //
+    window.addEventListener('resize', resize, false);
+    resize();
 }

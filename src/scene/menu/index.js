@@ -3,8 +3,10 @@ export default {
     create() {
         console.log("menu", "created");
         let {width, height} = this.sys.game.canvas;
+        let groundY = height * 0.8;
+
         this.bg = this.add.tileSprite(0, 0, width, height, 'background').setOrigin(0);
-        this.ground = this.add.tileSprite(0, height - 112, width, 112, 'ground').setOrigin(0);
+        this.ground = this.add.tileSprite(0, groundY, width, 112, 'ground').setOrigin(0);
 
         let bird = this.add.sprite(0, 100, 'bird');
         this.anims.create({
@@ -21,7 +23,6 @@ export default {
         let titleGroup = this.add.group();
         titleGroup.add(bird);
         titleGroup.add(title);
-        console.log(titleGroup);
 
         this.add.tween({
             targets: [title, bird],
