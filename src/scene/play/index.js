@@ -16,22 +16,31 @@ export default {
         this.flyHeight = -350;
         //  小鸟重力速度
         this.birdGravity = 220;
+        let themeIndex = Phaser.Math.Between(1, 2);
+        this.theme = {
+            bg: {1: "bg-dark.png", 2: "bg-day.png"}[themeIndex]
+        };
+
         this.labelDebug = this.add.text(40, 40, 'FPS 0', {fontSize: '15px', fill: '#00ff00'});
-        this.bg = this.add.tileSprite(0, 0, width, height, 'background').setOrigin(0);//背景图,这里先不用移动，游戏开始后再动
-        this.bg.setDisplaySize(width, height);
+        this.bg = this.add.tileSprite(0, 0, width, height, 'assets', this.theme.bg).setOrigin(0);
+        //地板，这里先不用移动，游戏开始后再动
+        this.ground = this.add.tileSprite(0, height - 112, width, 112, 'assets', 'ground.png').setOrigin(0).setDepth(999);
+        this.physics.add.existing(this.ground, true);
 
         //  分数
         this.score = 0;
         this.labelScore = this.add.bitmapText(width / 2 - 10, 50, "flappy_font", "0").setScale(0.6);
-        this.labelScore.setDepth(2);
-        // this.labelScore.setVisible(false);
         this.labelScoreGroup = this.add.group();
-        this.labelScoreBoard = this.labelScoreGroup.create(width / 2, 200, "score_board").setDepth(1);
-        this.labelScoreMedal = this.labelScoreGroup.create(width / 2 - 65, 209, "medals", 0).setDepth(1);
+        this.labelScoreGroup.add(this.labelScore, true);
+        this.labelScore.setDepth(2);
+        this.labelScoreBoard = this.labelScoreGroup.create(width / 2, 100, "score_board").setDepth(1);
+        this.labelScoreMedal = this.labelScoreGroup.create(width / 2 - 65, 140, "medals", 0).setDepth(1);
+        this.gameOver = this.labelScoreGroup.create(width / 2, 0, 'assets', "gameover.png").setDepth(2);
+        let btn = this.labelScoreGroup.create(width / 2, height / 2 - 50, 'assets', 'start.png').setInteractive().setDepth(1);
+        btn.on('pointerdown', () => {
+            this.scene.start('play');
+        });
         this.labelScoreGroup.toggleVisible();
-
-        //  结束
-        this.gameOver = this.add.sprite(width / 2, 0, "game_over").setVisible(false).setDepth(2);
 
         //  声音
         this.soundFly = this.sound.add("fly_sound");
@@ -39,13 +48,18 @@ export default {
         this.soundHitGround = this.sound.add("hit_ground_sound");
         this.soundHitPipe = this.sound.add("hit_pipe_sound");
 
-        //地板，这里先不用移动，游戏开始后再动
-        this.ground = this.add.tileSprite(0, height - 112, width, 112, 'ground').setOrigin(0).setDepth(999);
-        this.physics.add.existing(this.ground, true);
-
-        this.bird = this.physics.add.sprite(60, 240, 'bird').setOrigin(0.5).setDepth(998);
+        //  我们的主角，鸟儿
+        this.bird = this.physics.add.sprite(90, 260, 'bird').setOrigin(0.5).setDepth(998);
+        this.birdTween = this.add.tween({
+            targets: [this.bird],
+            y: this.bird.y + 5,
+            delay: 0,
+            duration: 400,
+            yoyo: true,
+            repeat: -1
+        });
         //提示点击屏幕的图片
-        this.playTip = this.add.image(width / 2, 190, 'play_tip').setOrigin(0.5, 0);
+        this.playTip = this.add.image(width / 2, 230, 'assets', 'tips.png').setOrigin(0.5, 0);
         // this.bird.setBounce(0.2);
         // this.bird.setCollideWorldBounds(true);
         this.bird.debugBodyColor = "#000";
@@ -54,7 +68,7 @@ export default {
         this.bird.body.setAllowGravity(false);
         //
         //get ready 文字
-        this.readyText = this.add.image(width / 2, 110, 'ready_text').setOrigin(0.5, 0);
+        this.readyText = this.add.image(width / 2, 110, 'assets', 'ready.png').setOrigin(0.5, 0);
         this.hasStarted = false; //游戏是否已开始
         this.gameIsOver = false;
         this.hasHitGround = false;
@@ -65,6 +79,7 @@ export default {
                 this.hasHitGround = false; //是否已碰撞到地面的标志
                 this.hasStarted = true; //游戏是否已经开始的标志
                 this.score = 0; //初始得分
+                this.birdTween.stop();
                 this.bird.body.setAllowGravity(true);
                 this.readyText.destroy();
                 this.playTip.destroy();
@@ -96,9 +111,9 @@ export default {
             this.bg.setActive(false);
             this.ground.setActive(false);
 
-            //  计分牌
-            this.labelScore.setScale(0.3).setPosition(width / 2 + 60, 180);
             this.labelScoreGroup.toggleVisible();
+            //  计分牌
+            this.labelScore.setScale(0.3).setPosition(width / 2 + 80, 80).setVisible(true);
             if (this.score >= 100) {
                 this.labelScoreMedal.setFrame(1);
             } else if (this.score >= 50) {
@@ -106,13 +121,14 @@ export default {
             } else {
                 this.labelScoreMedal.setVisible(false);
             }
-            this.gameOver.setVisible(true);
             this.add.tween({
-                targets: [this.gameOver],
-                y: 100,
+                targets: this.labelScoreGroup.getChildren(),
+                y: "+=100",
+                alpha: 1,
                 duration: 600
             });
 
+            //  控制鸟在死亡后的掉落
             this.bird.setActive(false);
             let targetBirdY = this.ground.y - this.bird.height + 18;
             let duration = 600;
@@ -127,43 +143,36 @@ export default {
                     duration: duration,
                 });
             }
-
-            let btn = this.add.sprite(width / 2, height / 2 + 50, 'btn').setInteractive().setDepth(1).setVisible(false);
-            btn.on('pointerdown', () => {
-                this.scene.start('play');
-            });
             this.physics.pause();
-            setTimeout(function () {
-                btn.setVisible(true);
-            }, 3000)
         };
+        let params = {};
         this.flyTween = this.add.tween({
             targets: [this.bird],
-            angle: -45,
-            duration: 100,
-            hold: 300
+            angle: -35,
+            duration: 150,
+            hold: 250
         });
         this.flyTween.pause();
-        this.flyDownTween = this.add.tween({
-            targets: [this.bird],
-            angle: 45,
-            duration: 100
-        });
-        this.flyDownTween.pause();
+        // this.flyDownTween = this.add.tween({
+        //     targets: [this.bird],
+        //     angle: 75,
+        //     duration: 100
+        // });
+        // this.flyDownTween.pause();
         this.fly = () => {
             if (this.hasStarted && !this.gameIsOver) {
                 this.bird.body.setVelocityY(this.flyHeight);
-                if (this.flyTween.isPlaying) {
-                    this.flyTween.play(80);
-                } else {
+                // if (this.flyTween.isPlaying) {
+                //     this.flyTween.play(60);
+                // } else {
                     this.flyTween.restart();
-                }
+                // }
                 this.soundFly.play();
             }
         };
         this.pipes = this.add.group();
-        this.addOnePipe = (x, y, frame) => {
-            let pipe = this.physics.add.sprite(x, y, 'pipe', frame).setActive().setVelocity(this.gameSpeed, 0).setGravity(0);
+        this.addOnePipe = (x, y, pipeName) => {
+            let pipe = this.physics.add.sprite(x, y, 'assets', pipeName).setActive(true).setVelocity(this.gameSpeed, 0).setGravity(0);
             pipe.body.setAllowGravity(false);
             this.pipes.add(pipe);
             // Automatically kill the pipe when it's no longer visible
@@ -175,8 +184,8 @@ export default {
             let position = Phaser.Math.Between(25, max);
             let topPipeY = position - 160; //上方管道的位置
             let bottomPipeY = position + gap + 160 - 20; //下方管道的位置
-            this.addOnePipe(width, topPipeY, 0);
-            this.addOnePipe(width, bottomPipeY, 1);
+            this.addOnePipe(width, topPipeY, "pipe-green-top.png");
+            this.addOnePipe(width, bottomPipeY, "pipe-green-bottom.png");
         };
         this.input.on("pointerdown", this.startGame, this);
         //利用时钟事件来循环产生管道
@@ -194,11 +203,12 @@ export default {
         this.bird.setActive(false);
     },
     update() {
-        this.bg.tilePositionX -= 0.1;
+        if (!this.gameIsOver) {
+            this.ground.tilePositionX += 2;
+        }
         if (this.hasStarted) {
-            this.ground.tilePositionX -= 1;
-            if (this.bird.angle < 45) {
-                this.bird.angle += 2;
+            if (this.bird.angle < 72) {
+                this.bird.angle += 1.5;
             }
             //分数检测和更新
             this.pipes.getChildren().forEach(function (pipe, index) {

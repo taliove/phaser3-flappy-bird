@@ -5,42 +5,45 @@ export default {
         let {width, height} = this.sys.game.canvas;
         let groundY = height * 0.8;
 
-        this.bg = this.add.tileSprite(0, 0, width, height, 'background').setOrigin(0);
-        this.ground = this.add.tileSprite(0, groundY, width, 112, 'ground').setOrigin(0);
+        this.bg = this.add.tileSprite(0, 0, width, height, 'assets', 'bg-day.png').setOrigin(0);
+        this.ground = this.add.tileSprite(0, groundY, width, 112, 'assets', 'ground.png').setOrigin(0);
 
-        let bird = this.add.sprite(0, 100, 'bird');
+        let bird = this.add.sprite(width / 2, 255, 'bird');
+        let framesBird = this.anims.generateFrameNames('assets', {
+            start: 1,
+            end: 3,
+            prefix: "yellow-bird",
+            suffix: ".png"
+        });
         this.anims.create({
             key: 'fly',
-            frames: this.anims.generateFrameNumbers('bird', {start: 0, end: 3}),
+            frames: framesBird,
             frameRate: 12,
             repeat: -1
         });
         bird.anims.play('fly', true);
 
-        let title = this.add.image(width / 2 - bird.width + 10, 100, 'title');
-        bird.setX(width / 2 + title.width / 2);
+        let title = this.add.image(width / 2, 200, 'assets', 'flappy.png');
 
         let titleGroup = this.add.group();
         titleGroup.add(bird);
         titleGroup.add(title);
 
         this.add.tween({
-            targets: [title, bird],
-            y: 120,
+            targets: [bird],
+            y: bird.y + 5,
             ease: null,
             delay: 0,
-            autoStart: true,
-            duration: 1000,
+            duration: 400,
             yoyo: true,
             repeat: -1
         });
-        let btn = this.add.sprite(width / 2, height - 180, 'btn').setInteractive();
+        let btn = this.add.sprite(width / 2, height - 130, 'assets', 'start.png').setInteractive();
         btn.on('pointerdown', () => {
             this.scene.start('play');
         })
     },
     update() {
-        this.bg.tilePositionX -= 0.1;
-        this.ground.tilePositionX -= 1;
+        this.ground.tilePositionX += 2;
     }
 }
