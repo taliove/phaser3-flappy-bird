@@ -6,8 +6,28 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>游戏DEMO</title>
-    <style>*{margin:0;padding:0}</style>
+    <style>
+        * {
+        margin: 0;
+        padding: 0
+    }
+
+    body {
+        margin: 0;
+        overflow: hidden;
+        background-color: black;
+    }
+
+    canvas {
+        height: 100%;
+    }
+
+    #phaser-app {
+        margin: 0 auto;
+    }</style>
 </head>
-<body bgcolor="white" onclick="window.focus()" oncontextmenu="event.preventDefault()" onmousewheel="event.preventDefault()">
+<body bgcolor="white" onclick="window.focus()" oncontextmenu="event.preventDefault()"
+      onmousewheel="event.preventDefault()">
+<div id="phaser-app"></div>
 </body>
 </html>

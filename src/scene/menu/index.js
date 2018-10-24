@@ -2,11 +2,11 @@ export default {
     key: "menu",
     create() {
         console.log("menu", "created");
-        this.bg = this.add.tileSprite(144, 505 / 2, 288, 505, 'background');
-        this.ground = this.add.tileSprite(335 / 2, 505 - 112 / 2, 505, 112, 'ground');
+        let {width, height} = this.sys.game.canvas;
+        this.bg = this.add.tileSprite(0, 0, width, height, 'background').setOrigin(0);
+        this.ground = this.add.tileSprite(0, height - 112, width, 112, 'ground').setOrigin(0);
 
-        let titleGroup = this.add.group();
-        let bird = titleGroup.create(220, 110, 'bird').setOrigin(0);
+        let bird = this.add.sprite(0, 100, 'bird');
         this.anims.create({
             key: 'fly',
             frames: this.anims.generateFrameNumbers('bird', {start: 0, end: 3}),
@@ -14,7 +14,14 @@ export default {
             repeat: -1
         });
         bird.anims.play('fly', true);
-        let title = titleGroup.create(30, 100, 'title').setOrigin(0);
+
+        let title = this.add.image(width / 2 - bird.width + 10, 100, 'title');
+        bird.setX(width / 2 + title.width / 2);
+
+        let titleGroup = this.add.group();
+        titleGroup.add(bird);
+        titleGroup.add(title);
+        console.log(titleGroup);
 
         this.add.tween({
             targets: [title, bird],
@@ -26,8 +33,7 @@ export default {
             yoyo: true,
             repeat: -1
         });
-        let {width, height} = this.sys.game.canvas;
-        let btn = this.add.sprite(width / 2, height / 2, 'btn').setInteractive();
+        let btn = this.add.sprite(width / 2, height - 180, 'btn').setInteractive();
         btn.on('pointerdown', () => {
             this.scene.start('play');
         })
