@@ -8,6 +8,7 @@ export default {
         this.ground = this.add.tileSprite(0, groundY, width, 112, 'assets', 'ground.png').setOrigin(0);
 
         let bird = this.add.sprite(width / 2, 230, 'bird');
+        bird.setSize(34, 24);
         let framesBird = this.anims.generateFrameNames('assets', {
             start: 1,
             end: 3,

@@ -50,6 +50,9 @@ export default {
 
         //  我们的主角，鸟儿
         this.bird = this.physics.add.sprite(90, 260, 'bird').setOrigin(0.5).setDepth(998);
+        this.bird.setSize(34, 20);
+        this.bird.setBounce(0.4);
+        this.bird.setCollideWorldBounds(true);
         this.birdTween = this.add.tween({
             targets: [this.bird],
             y: "+=5",
@@ -89,6 +92,7 @@ export default {
             }
         };
         this.stopGame = () => {
+            this.cameras.main.shake(40);
             this.gameIsOver = true;
             this.time.removeAllEvents();
             this.hasStarted = false;
