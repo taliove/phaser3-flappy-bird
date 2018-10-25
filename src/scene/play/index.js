@@ -137,7 +137,7 @@ class Play extends Phaser.Scene {
          * 我们的主角，鸟儿
          * @type {*|Phaser.GameObjects.Group}
          */
-        this.bird = this.physics.add.sprite(90, 260, 'bird').setOrigin(0.5).setDepth(998);
+        this.bird = this.physics.add.sprite(90, 260, 'bird').setDepth(998);
         this.bird.body.setCircle(13, 2, -2);
         this.bird.setBounce(0.4);
         this.bird.setCollideWorldBounds(true);
@@ -159,24 +159,68 @@ class Play extends Phaser.Scene {
         //
         //get ready 文字
         this.readyText = this.add.image(width / 2, 110, 'assets', 'ready.png').setOrigin(0.5, 0);
+
         /**
          * 小鸟飞行姿态
          * @type {Phaser.Tweens.Tween}
          */
-        this.flyTween = this.add.tween({
+        this.flyTween = this.tweens.add({
             targets: [this.bird],
-            angle: -45,
+            angle: {
+                getStart(target, key, value) {
+                    let angle = target[key];
+                    if (angle <= -45) {
+                        return -45;
+                    }
+                    if (angle >= 0) {
+                        return -45;
+                    }
+                    return target[key];
+                },
+                getEnd() {
+                    return -45;
+                }
+            },
             duration: 350,
-            hold: 350,
+            onStart: (tween, target) => {
+                this.flyDoing = true;
+            },
+            onComplete: (tween, target) => {
+                if (this.flyDoing) {
+                    this.flyDoing = false;
+                    if (this.flyDownTween.isPlaying()) {
+                        this.flyDownTween.stop();
+                        return;
+                    }
+                }
+                this.flyDownTween.restart();
+            }
         });
         this.flyTween.pause();
         /**
          * 小鸟下降姿态
          */
-        this.flyDownTween = this.add.tween({
+        this.flyDownTween = this.tweens.add({
+            delay: (v1, v2) => {
+                let y = this.bird.body.velocity.y;
+                let delay = Math.abs(y) * 10;
+                delay = delay <= 50 ? 200 : delay;
+                return delay;
+            },
             targets: [this.bird],
-            angle: 90,
-            duration: 100
+            angle: {
+                getStart(target, key, value) {
+                    return target[key];
+                },
+                getEnd() {
+                    return 90;
+                }
+            },
+            duration: () => {
+                let duration = this.getBirdHeight() * 1.2;
+                // console.log("duration", duration);
+                return duration <= 200 ? 220 : duration;
+            }
         });
         this.flyDownTween.pause();
         this.pipes = this.add.group();
@@ -190,7 +234,7 @@ class Play extends Phaser.Scene {
             paused: true,
             callbackScope: this
         });
-        this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, this.hitPipe, null, this);
+        // this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, this.hitPipe, null, this);
         this.physicBirdGround = this.physics.add.collider(this.bird, this.ground, this.hitGround, null, this);
     }
 
@@ -241,6 +285,25 @@ class Play extends Phaser.Scene {
             alpha: 1,
             duration: 600
         });
+        this.add.tween({
+            targets: this.bird,
+            angle: () => {
+                if (this.bird.angle < 90 && this.bird.angle >= 0) {
+                    return 90;
+                }
+                return this.bird.angle;
+            },
+            duration: () => {
+                let duration = this.getBirdHeight() * 1.5;
+                return duration <= 0 ? 10 : duration;
+            },
+            state() {
+                if (this.duration <= 0) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
         //  控制鸟在死亡后的掉落
         this.bird.setActive(false);
         // let targetBirdY = this.ground.y - this.bird.height + 18;
@@ -264,6 +327,14 @@ class Play extends Phaser.Scene {
             pipe.setActive(false).setVelocity(0);
         });
     };
+
+    /**
+     * 获取鸟儿离地面的高度
+     * @returns {number}
+     */
+    getBirdHeight() {
+        return this.ground.y - this.bird.y - this.bird.height / 2;
+    }
 
     /**
      * 撞击管道时结束游戏
@@ -297,12 +368,11 @@ class Play extends Phaser.Scene {
     fly() {
         if (this.hasStarted && !this.gameIsOver) {
             this.bird.body.setVelocityY(this.flyHeight);
-            console.log('is down', this.isDown);
-            if (this.isDown) {
-                this.flyDownTween.restart();
-            } else {
-                this.flyTween.restart();
-            }
+            // if (this.isDown) {
+            //     this.flyDownTween.restart();
+            // } else {
+            this.flyTween.restart();
+            // }
             this.soundFly.play();
         }
     }
@@ -365,14 +435,8 @@ class Play extends Phaser.Scene {
             this.ground.tilePositionX += 2;
         }
         if (this.hasStarted) {
-            /**
-             * 是否正在下降
-             * @type {boolean}
-             */
-            this.isDown = this._lastBirdY > this.bird.body.y;
-            this._lastBirdY = this.bird.body.y;
             // if (this.bird.angle <= 88.25) {
-            //     this.bird.angle += 1.75;
+            //     this.bird.angle += 1.25;
             // }
             //分数检测和更新
             this.pipes.getChildren().forEach(function (pipe, index) {
