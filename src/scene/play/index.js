@@ -27,7 +27,7 @@ class Play extends Phaser.Scene {
          * 上下管道之间的间隙宽度
          * @type {number}
          */
-        this.gap = 165;
+        this.gap = 170;
         /**
          * 游戏速度或管道速度
          * @type {number}
@@ -37,7 +37,7 @@ class Play extends Phaser.Scene {
          * 管道生成间隔时间
          * @type {number}
          */
-        this.pipeDelay = 1350;
+        this.pipeDelay = 1400;
         /**
          * 每次飞行高度
          * @type {number}
@@ -118,10 +118,10 @@ class Play extends Phaser.Scene {
         this.labelScoreGroup = this.add.group();
         this.labelScoreGroup.add(this.labelScore, true);
         this.labelScore.setDepth(2);
-        this.labelScoreBoard = this.labelScoreGroup.create(width / 2, 100, "score_board").setDepth(1);
-        this.labelScoreMedal = this.labelScoreGroup.create(width / 2 - 65, 140, "medals", 0).setDepth(1);
-        this.gameOver = this.labelScoreGroup.create(width / 2, 0, 'assets', "gameover.png").setDepth(2);
-        let btn = this.labelScoreGroup.create(width / 2, height / 2 - 50, 'assets', 'start.png').setInteractive().setDepth(1);
+        this.labelScoreBoard = this.labelScoreGroup.create(width / 2, 100, "score_board").setDepth(2);
+        this.labelScoreMedal = this.labelScoreGroup.create(width / 2 - 65, 140, "medals", 0).setDepth(2);
+        this.gameOver = this.labelScoreGroup.create(width / 2, 0, 'assets', "gameover.png").setDepth(3);
+        let btn = this.labelScoreGroup.create(width / 2, height / 2 - 50, 'assets', 'start.png').setInteractive().setDepth(2);
         btn.on('pointerdown', () => {
             this.scene.start('play');
         });
