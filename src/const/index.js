@@ -39,7 +39,7 @@ export const BIRD_TYPE = {
      * @returns {*}
      */
     getRandom() {
-        return birds[Phaser.Math.Between(1, birds.length)];
+        return birds[Phaser.Math.Between(0, birds.length - 1)];
     }
 };
 
@@ -61,6 +61,6 @@ export const THEME_TYPE = {
      * @returns {{"theme-dark"}|{"theme-day"}|*}
      */
     getRandom() {
-        return themes[Phaser.Math.Between(1, themes.length)];
+        return themes[Phaser.Math.Between(0, themes.length - 1)];
     }
 };

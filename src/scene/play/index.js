@@ -27,27 +27,27 @@ class Play extends Phaser.Scene {
          * 上下管道之间的间隙宽度
          * @type {number}
          */
-        this.gap = 140;
+        this.gap = 165;
         /**
          * 游戏速度或管道速度
          * @type {number}
          */
-        this.gameSpeed = -120;
+        this.gameSpeed = -110;
         /**
          * 管道生成间隔时间
          * @type {number}
          */
-        this.pipeDelay = 1400;
+        this.pipeDelay = 1350;
         /**
          * 每次飞行高度
          * @type {number}
          */
-        this.flyHeight = -350;
+        this.flyHeight = -300;
         /**
          * 小鸟重力速度
          * @type {number}
          */
-        this.birdGravity = 220;
+        this.birdGravity = 250;
 
         /**
          * 游戏是否已开始
@@ -138,7 +138,7 @@ class Play extends Phaser.Scene {
          * @type {*|Phaser.GameObjects.Group}
          */
         this.bird = this.physics.add.sprite(90, 260, 'bird').setOrigin(0.5).setDepth(998);
-        this.bird.setSize(34, 20);
+        this.bird.body.setCircle(13, 2, -2);
         this.bird.setBounce(0.4);
         this.bird.setCollideWorldBounds(true);
         this.birdTween = this.add.tween({
@@ -166,10 +166,19 @@ class Play extends Phaser.Scene {
         this.flyTween = this.add.tween({
             targets: [this.bird],
             angle: -45,
-            duration: 150,
-            // hold: 300
+            duration: 350,
+            hold: 350,
         });
         this.flyTween.pause();
+        /**
+         * 小鸟下降姿态
+         */
+        this.flyDownTween = this.add.tween({
+            targets: [this.bird],
+            angle: 90,
+            duration: 100
+        });
+        this.flyDownTween.pause();
         this.pipes = this.add.group();
 
         this.input.on("pointerdown", this.startGame, this);
@@ -288,11 +297,12 @@ class Play extends Phaser.Scene {
     fly() {
         if (this.hasStarted && !this.gameIsOver) {
             this.bird.body.setVelocityY(this.flyHeight);
-            // if (this.flyTween.isPlaying()) {
-            //     this.flyTween.play(130);
-            // } else {
-            this.flyTween.restart();
-            // }
+            console.log('is down', this.isDown);
+            if (this.isDown) {
+                this.flyDownTween.restart();
+            } else {
+                this.flyTween.restart();
+            }
             this.soundFly.play();
         }
     }
@@ -303,8 +313,10 @@ class Play extends Phaser.Scene {
     addColumnPipes() {
         let max = this.height - this.gap - 87;
         let position = Phaser.Math.Between(25, max);
-        let topPipeY = position - 160; //上方管道的位置
-        let bottomPipeY = position + this.gap + 160 - 20; //下方管道的位置
+        //上方管道的位置
+        let topPipeY = position - 160;
+        //下方管道的位置
+        let bottomPipeY = position + this.gap + 100;
         this.addOnePipe(this.width, topPipeY, bottomPipeY);
     }
 
@@ -319,7 +331,6 @@ class Play extends Phaser.Scene {
         if (children.length >= 6) {
             let pipe1 = children[0];
             let pipe2 = children[1];
-            console.log("pips --- ", pipe1.pipeIndex, pipe2.pipeIndex);
             this.pipes.remove(pipe1);
             this.pipes.remove(pipe2);
             pipe1.hasScored = false;
@@ -354,9 +365,15 @@ class Play extends Phaser.Scene {
             this.ground.tilePositionX += 2;
         }
         if (this.hasStarted) {
-            if (this.bird.angle <= 88.25) {
-                this.bird.angle += 1.75;
-            }
+            /**
+             * 是否正在下降
+             * @type {boolean}
+             */
+            this.isDown = this._lastBirdY > this.bird.body.y;
+            this._lastBirdY = this.bird.body.y;
+            // if (this.bird.angle <= 88.25) {
+            //     this.bird.angle += 1.75;
+            // }
             //分数检测和更新
             this.pipes.getChildren().forEach(function (pipe, index) {
                 if (index % 2 === 0) return false;
@@ -367,8 +384,6 @@ class Play extends Phaser.Scene {
                 }
             }, this);
         }
-
-        // this.labelDebug.setText("FPS " + this.time.fps);
     }
 }
 

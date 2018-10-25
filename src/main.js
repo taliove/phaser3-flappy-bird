@@ -15,7 +15,7 @@ window.onload = function () {
             default: 'arcade',
             arcade: {
                 debug: false,
-                gravity: {y: 800}
+                gravity: {y: 500}
             }
         }
     };
