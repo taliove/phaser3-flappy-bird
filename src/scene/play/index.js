@@ -137,7 +137,7 @@ class Play extends Phaser.Scene {
          * 我们的主角，鸟儿
          * @type {*|Phaser.GameObjects.Group}
          */
-        this.bird = this.physics.add.sprite(90, 260, 'bird').setDepth(998);
+        this.bird = this.physics.add.sprite(90, 260, 'bird').setDepth(1);
         this.bird.body.setCircle(13, 2, -2);
         this.bird.setBounce(0.4);
         this.bird.setCollideWorldBounds(true);
@@ -204,7 +204,8 @@ class Play extends Phaser.Scene {
             delay: (v1, v2) => {
                 let y = this.bird.body.velocity.y;
                 let delay = Math.abs(y) * 10;
-                delay = delay <= 50 ? 200 : delay;
+                delay = delay <= 50 ? 200 : (delay >= 500 ? 500 : delay);
+                // console.log("delay", delay);
                 return delay;
             },
             targets: [this.bird],
@@ -217,9 +218,10 @@ class Play extends Phaser.Scene {
                 }
             },
             duration: () => {
-                let duration = this.getBirdHeight() * 1.2;
-                // console.log("duration", duration);
-                return duration <= 200 ? 220 : duration;
+                let duration = this.getBirdHeight() * 1.5;
+                duration = duration <= 200 ? 300 : 500;
+                // console.log("duration", duration, "height", this.getBirdHeight());
+                return duration;
             }
         });
         this.flyDownTween.pause();
@@ -234,7 +236,7 @@ class Play extends Phaser.Scene {
             paused: true,
             callbackScope: this
         });
-        // this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, this.hitPipe, null, this);
+        this.physicBirdPipe = this.physics.add.overlap(this.bird, this.pipes, this.hitPipe, null, this);
         this.physicBirdGround = this.physics.add.collider(this.bird, this.ground, this.hitGround, null, this);
     }
 
@@ -342,7 +344,7 @@ class Play extends Phaser.Scene {
     hitPipe() {
         if (this.hasHitPipe || this.hasHitGround) return;
         this.hasHitPipe = true;
-        console.log("hit pipe");
+        // console.log("hit pipe");
         this.physicBirdPipe.destroy();
         this.stopGame();
         this.soundHitPipe.play();
@@ -355,7 +357,7 @@ class Play extends Phaser.Scene {
         if (this.hasHitGround || this.hasHitPipe) {
             return;
         }
-        console.log("hit ground");
+        // console.log("hit ground");
         // this.physics.world.removeCollider(this.physicBirdGround);
         this.soundHitGround.play();
         this.hasHitGround = true;
