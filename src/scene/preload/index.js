@@ -1,9 +1,31 @@
-/**
- * 加载页面
- */
-export default {
-    key: "preload",
+class Preload extends Phaser.Scene {
+    constructor() {
+        super({key: "preload"})
+    }
+
+    progress() {
+        let {width, height} = this.sys.game.canvas;
+        let x = 50, y = height / 2 - 5, w = width - 100, h = 10, radius = 5;
+        let progress = this.add.graphics({
+            config: {
+                x, y
+            }
+        });
+
+        this.load.on('progress', function (value) {
+            progress.clear();
+            progress.lineStyle(1, 0xFFFFFF, 1.0);
+            progress.fillStyle(0xFFFFFF, 1);
+            progress.strokeRoundedRect(x - 1, y - 1, w + 2, h + 2, radius);
+            progress.fillRoundedRect(x, y, Math.floor(w * value), h, radius);
+        });
+        // this.load.on('complete', function () {
+        //     progress.destroy();
+        // });
+    }
+
     preload() {
+        this.progress();
         this.load.multiatlas('assets', 'static/assets/atlas.json', "static/assets");
         this.load.bitmapFont("flappy_font", 'static/assets/fonts/flappyfont/flappyfont.png', 'static/assets/fonts/flappyfont/flappyfont.fnt');//显示分数的字体
         //飞翔的音效
@@ -22,13 +44,11 @@ export default {
         this.load.spritesheet('medals', 'static/assets/medals.png', {
             frameWidth: 44, frameHeight: 46
         }); //得分板
-    },
-    create() {
-        console.log('preload', "created");
-        let preloadSpring = this.add.sprite(50, this.height / 2, 'loading');
-        this.scene.start('menu');
-    },
-    update() {
+    }
 
+    create() {
+        this.scene.start("menu");
     }
 }
+
+export default Preload;

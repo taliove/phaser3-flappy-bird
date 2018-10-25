@@ -1,6 +1,9 @@
 # Phaser 3 Flappy Example
 
-官方例子：http://labs.phaser.io/index.html
+* [官方示例库](http://labs.phaser.io/index.html)
+* [用Phaser来制作一个html5游戏——flappy bird](https://www.cnblogs.com/2050/p/3790279.html)
+* [API文档](https://photonstorm.github.io/phaser3-docs/index.html)
+* [Phaser 3 Scene / Phaser 2 State - passing data to init when start](http://www.html5gamedevs.com/topic/36148-phaser-3-scene-phaser-2-state-passing-data-to-init-when-start/)
 
 ## 启动一个场景
 
@@ -45,10 +48,6 @@ this.startBtn.on('pointerover', function (event) { /* Do something when the mous
 this.startBtn.on('pointerout', function (event) { /* Do something when the mouse exits. */ });
 this.startBtn.on('pointerdown', startGame); // Start game on click.
 ```
-
-* 例子：https://www.cnblogs.com/2050/p/3790279.html
-* [API文档](https://photonstorm.github.io/phaser3-docs/index.html)
-* [Phaser 3 Scene / Phaser 2 State - passing data to init when start](http://www.html5gamedevs.com/topic/36148-phaser-3-scene-phaser-2-state-passing-data-to-init-when-start/)
 
 ## 加载atlas
 
