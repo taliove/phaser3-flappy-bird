@@ -28,7 +28,7 @@ class Play extends Phaser.Scene {
          * 上下管道之间的间隙宽度
          * @type {number}
          */
-        this.gap = 165;
+        this.gap = 170;
         /**
          * 游戏速度或管道速度
          * @type {number}
@@ -38,7 +38,7 @@ class Play extends Phaser.Scene {
          * 管道生成间隔时间
          * @type {number}
          */
-        this.pipeDelay = 1450;
+        this.pipeDelay = 1500;
         /**
          * 每次飞行高度
          * @type {number}
@@ -204,7 +204,7 @@ class Play extends Phaser.Scene {
             delay: (v1, v2) => {
                 let y = this.bird.body.velocity.y;
                 let delay = Math.abs(y) * 10;
-                delay = delay <= 50 ? 200 : (delay >= 500 ? 500 : delay);
+                delay = delay <= 50 ? 200 : (delay >= 350 ? 350 : delay);
                 // console.log("delay", delay);
                 return delay;
             },
@@ -219,7 +219,7 @@ class Play extends Phaser.Scene {
             },
             duration: () => {
                 let duration = this.getBirdHeight() * 1.5;
-                duration = duration <= 200 ? 300 : 500;
+                duration = duration <= 200 ? 200 : 300;
                 // console.log("duration", duration, "height", this.getBirdHeight());
                 return duration;
             }
@@ -281,7 +281,8 @@ class Play extends Phaser.Scene {
 
         }
         //  计分牌
-        this.labelScore.setScale(0.3).setPosition(this.width / 2 + 80, 80).setVisible(true);
+        this.labelScore.setScale(0.3).setVisible(true);
+        this.labelScore.setPosition(this.width - this.labelScore.width - 45, 80);
         if (this.score >= 100) {
             this.labelScoreMedal.setFrame(1);
         } else if (this.score >= 50) {
@@ -290,6 +291,7 @@ class Play extends Phaser.Scene {
             this.labelScoreMedal.setVisible(false);
         }
         let labelMaxScore = this.add.bitmapText(this.width / 2 + 80, 127, "flappy_font", maxStore).setScale(0.3).setDepth(3);
+        labelMaxScore.setPosition(this.width - labelMaxScore.width - 45, 127);
         this.labelScoreGroup.add(labelMaxScore, true);
         this.add.tween({
             targets: this.labelScoreGroup.getChildren(),
