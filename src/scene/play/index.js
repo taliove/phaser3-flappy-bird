@@ -28,7 +28,7 @@ class Play extends Phaser.Scene {
          * 上下管道之间的间隙宽度
          * @type {number}
          */
-        this.gap = 170;
+        this.gap = 165;
         /**
          * 游戏速度或管道速度
          * @type {number}
@@ -184,6 +184,9 @@ class Play extends Phaser.Scene {
             duration: 350,
             onStart: (tween, target) => {
                 this.flyDoing = true;
+                if (this.flyDownTween.isPlaying()) {
+                    this.flyDownTween.stop();
+                }
             },
             onComplete: (tween, target) => {
                 if (this.flyDoing) {
@@ -219,7 +222,7 @@ class Play extends Phaser.Scene {
             },
             duration: () => {
                 let duration = this.getBirdHeight() * 1.5;
-                duration = duration <= 200 ? 200 : 300;
+                duration = duration <= 200 ? 300 : 400;
                 // console.log("duration", duration, "height", this.getBirdHeight());
                 return duration;
             }
