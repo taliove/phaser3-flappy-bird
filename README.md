@@ -14,6 +14,8 @@
 - 按钮点按效果
 - 微信小程序兼容
 
+[在线体验 online demo](https://taliove.github.io/phaser3-flappy-bird/index.html)
+
 ## 环境配置
 
 |库|版本|
@@ -117,3 +119,9 @@ this.load.audio("xx", ['xx.ogg','xx.mp3']);
 ```
 ffmpeg -i input.wav -vn -ar 44100 -ac 2 -ab 192k -f mp3 output.mp3
 ```
+
+# License
+
+MIT
+
+[taliove](http://www.taliove.com) 2018
