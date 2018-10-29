@@ -30,13 +30,15 @@ window.onload = function () {
         var windowHeight = window.innerHeight;
         var gameRatio = config.width / config.height;
 
-        //  以高度优先
-        // canvas.style.width = (windowHeight * gameRatio) + "px";
-        // canvas.style.height = "100%";
-
-        //  以宽度优先
-        canvas.style.width = "100%";
-        canvas.style.height = windowWidth / gameRatio + "px";
+        if (windowWidth > windowHeight) {
+            //  以高度优先
+            canvas.style.width = (windowHeight * gameRatio) + "px";
+            canvas.style.height = "100%";
+        } else {
+            //  以宽度优先
+            canvas.style.width = "100%";
+            canvas.style.height = windowWidth / gameRatio + "px";
+        }
     }
 
     //
