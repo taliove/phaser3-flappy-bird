@@ -14,7 +14,7 @@
 - 按钮点按效果
 - 微信小程序兼容
 
-[在线体验 online demo](https://taliove.github.io/phaser3-flappy-bird/index.html)
+[在线体验 online demo](https://taliove.github.io/phaser3-flappy-bird/demo/index.html)
 
 ## 环境配置
 
