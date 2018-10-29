@@ -1,7 +1,8 @@
 # Phaser 3 Flappy Bird Example
 > Phaser3 Flappy Bird 例子
 
-
+![version](https://img.shields.io/badge/phaser3--flappy--bird-1.0.0-orange.svg)
+![build](https://img.shields.io/badge/build-pass-brightgreen.svg)
 
 初学`Phaser3`与H5游戏制作。按照网上搜索的一些例子与教程，完整的做出来了。有些小问题还没有找到更好的方式去解决等。
 
