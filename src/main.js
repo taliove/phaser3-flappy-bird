@@ -19,6 +19,10 @@ window.onload = function () {
             }
         }
     };
+    //  微信小程序兼容
+    if (window.canvas) {
+        config.canvas = window.canvas;
+    }
 
     const game = new Phaser.Game(config);
     game.scene.start('boot');
