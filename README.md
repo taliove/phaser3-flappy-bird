@@ -16,6 +16,8 @@
 
 [在线体验 online demo](https://taliove.github.io/phaser3-flappy-bird/demo/index.html)
 
+[微信小程序适配](https://github.com/taliove/weapp-phaser3-adapter)
+
 ## 环境配置
 
 |库|版本|
